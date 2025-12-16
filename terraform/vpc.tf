@@ -1,6 +1,11 @@
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
+<<<<<<< HEAD
   version = "5.0.0"   
+=======
+  version = "5.0.0"
+
+>>>>>>> 802e510 (Terraform imports done, ready for GitHub Actions)
   name = "strapi-vpc-vaishnavi"
   cidr = "10.0.0.0/16"
 
