@@ -1,5 +1,5 @@
 resource "aws_db_subnet_group" "default" {
-  name       = "strapi-db-subnet"
+  name       = "strapi-db-subnet-vaishnavi-ecs"
   subnet_ids = data.aws_subnets.default.ids
 }
 
