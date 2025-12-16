@@ -4,7 +4,7 @@ resource "aws_db_subnet_group" "default" {
 }
 
 resource "aws_db_instance" "postgres" {
-  identifier              = "strapi-postgres"
+  identifier              = "strapi-postgres-vaishnavi"
   engine                  = "postgres"
   engine_version          = "15.4"
   instance_class          = "db.t3.micro"
