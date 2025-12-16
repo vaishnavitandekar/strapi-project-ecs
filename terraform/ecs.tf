@@ -1,13 +1,13 @@
 resource "aws_ecr_repository" "this" {
-  name = "strapi-backend-vaishnavi-ecs"
+  name = "strapi-backend-vaishnavi"
 }
 
 resource "aws_ecs_cluster" "this" {
-  name = "strapi-cluster-vaishnavi-ecs"
+  name = "strapi-cluster-vaishnavi"
 }
 
 resource "aws_iam_role" "exec" {
-  name = "ecsTaskExecutionRole-vaishnavi-strapi"
+  name = "ecsTaskExecutionRole-vaishnavi"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "task" {
   execution_role_arn       = aws_iam_role.exec.arn
 
   container_definitions = jsonencode([{
-    name  = "strapi-vaishnavi-ecs"
+    name  = "strapi-vaishnavi"
     image = "${aws_ecr_repository.this.repository_url}:latest"
     portMappings = [{ containerPort = 1337 }]
     environment = [
