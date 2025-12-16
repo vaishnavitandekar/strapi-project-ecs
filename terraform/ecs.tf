@@ -1,3 +1,7 @@
+resource "aws_ecr_repository" "this" {
+  name = "strapi-backend-vaishnavi"
+}
+
 resource "aws_ecs_cluster" "this" {
   name = "strapi-cluster-vaishnavi"
 }
@@ -34,7 +38,7 @@ resource "aws_ecs_task_definition" "task" {
     portMappings = [{ containerPort = 1337 }]
     environment = [
       { name = "DATABASE_HOST", value = aws_db_instance.postgres.address },
-      { name = "DATABASE_PORT",     value = "5432" },
+      { name = "DATABASE_PORT", value = "5432" },
       { name = "DATABASE_NAME", value = "strapi" },
       { name = "DATABASE_USERNAME", value = var.db_username },
       { name = "DATABASE_PASSWORD", value = var.db_password }
@@ -50,15 +54,8 @@ resource "aws_ecs_service" "service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = module.vpc.private_subnets
+    subnets         = data.aws_subnets.default.ids
     security_groups = [aws_security_group.ecs_sg.id]
+    assign_public_ip = true
   }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.tg.arn
-    container_name   = "strapi-vaishnavi"
-    container_port   = 1337
-  }
-
-  depends_on = [aws_lb_listener.http]
 }
