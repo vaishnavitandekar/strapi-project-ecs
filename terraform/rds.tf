@@ -1,10 +1,10 @@
 resource "aws_db_subnet_group" "default" {
-  name       = "strapi-db-subnet-vaishnavi-rdsecs"
+  name       = "vaishnavi-ecs-strapi-db-subnet"
   subnet_ids = data.aws_subnets.default.ids
 }
 
 resource "aws_db_instance" "postgres" {
-  identifier              = "strapi-postgres-vaishnavi-ecs"
+  identifier              = "vaishnavi-strapi-postgres"
   engine                  = "postgres"
   engine_version          = "15"
   instance_class          = "db.t3.micro"
