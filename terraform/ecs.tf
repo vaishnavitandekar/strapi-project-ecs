@@ -3,7 +3,7 @@ resource "aws_ecr_repository" "this" {
 }
 
 resource "aws_ecs_cluster" "this" {
-  name = "vaishnavi-strapi-cluster"
+  name = "strapi-cluster-vaishnavi"
 }
 
 resource "aws_iam_role" "exec" {
@@ -47,7 +47,7 @@ resource "aws_ecs_task_definition" "task" {
 }
 
 resource "aws_ecs_service" "service" {
-  name            = "vaishnavies-strapi-service"
+  name            = "strapi-service-vaishnavi"
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.task.arn
   desired_count   = 1
