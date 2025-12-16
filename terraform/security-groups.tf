@@ -10,7 +10,7 @@ data "aws_subnets" "default" {
 }
 
 resource "aws_security_group" "ecs_sg" {
-  name   = "vaishnaviecs-sgg"
+  name   = "vaishnaviecss-sgg"
   vpc_id = data.aws_vpc.default.id
 
   ingress {
@@ -29,7 +29,7 @@ resource "aws_security_group" "ecs_sg" {
 }
 
 resource "aws_security_group" "rds_sg" {
-  name   = "vaishnaviecs-rds-sgg"
+  name   = "vaishnaviecss-rds-sgg"
   vpc_id = data.aws_vpc.default.id
 
   ingress {
