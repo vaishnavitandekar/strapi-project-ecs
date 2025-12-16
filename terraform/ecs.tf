@@ -7,7 +7,7 @@ resource "aws_ecs_cluster" "this" {
 }
 
 resource "aws_iam_role" "exec" {
-  name = "ecsTaskExecutionRole-vaishnaviecsss"
+  name = "ecsTaskExecutionRole-vaishnavie"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -32,18 +32,41 @@ resource "aws_ecs_task_definition" "task" {
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = aws_iam_role.exec.arn
 
-  container_definitions = jsonencode([{
-    name  = "vaishnavi-strapi-container"
-    image = "${aws_ecr_repository.this.repository_url}:latest"
-    portMappings = [{ containerPort = 1337 }]
-    environment = [
-      { name = "DATABASE_HOST", value = aws_db_instance.postgres.address },
-      { name = "DATABASE_PORT", value = "5432" },
-      { name = "DATABASE_NAME", value = "strapi" },
-      { name = "DATABASE_USERNAME", value = var.db_username },
-      { name = "DATABASE_PASSWORD", value = var.db_password }
-    ]
-  }])
+  container_definitions = jsonencode([
+    {
+      name  = "vaishnavi-strapii"
+      image = "${aws_ecr_repository.this.repository_url}:latest"
+
+      portMappings = [
+        {
+          containerPort = 1337
+          hostPort      = 1337
+        }
+      ]
+
+      environment = [
+        { name = "NODE_ENV", value = "production" },
+        { name = "HOST", value = "0.0.0.0" },
+        { name = "PORT", value = "1337" },
+
+        { name = "DATABASE_CLIENT", value = "postgres" },
+        { name = "DATABASE_HOST", value = aws_db_instance.postgres.address },
+        { name = "DATABASE_PORT", value = "5432" },
+        { name = "DATABASE_NAME", value = "strapi" },
+        { name = "DATABASE_USERNAME", value = "strapi" },
+        { name = "DATABASE_PASSWORD", value = var.db_password },
+
+        { name = "APP_KEYS", value = var.app_keys },
+        { name = "API_TOKEN_SALT", value = var.api_token_salt },
+        { name = "TRANSFER_TOKEN_SALT", value = var.transfer_token_salt },
+        { name = "ENCRYPTION_KEY", value = var.encryption_key },
+        { name = "ADMIN_JWT_SECRET", value = var.admin_jwt_secret },
+        { name = "JWT_SECRET", value = var.jwt_secret }
+      ]
+
+    }
+  ])
+
 }
 
 resource "aws_ecs_service" "service" {
@@ -54,8 +77,8 @@ resource "aws_ecs_service" "service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = data.aws_subnets.default.ids
-    security_groups = [aws_security_group.ecs_sg.id]
+    subnets          = data.aws_subnets.default.ids
+    security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
   }
 }
