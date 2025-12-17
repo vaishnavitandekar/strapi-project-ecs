@@ -6,8 +6,25 @@ resource "aws_ecs_cluster" "this" {
   name = "strapi-cluster-vaishnavii"
 }
 
+resource "aws_iam_role" "task" {
+  name = "ecsTaskRole-vaishnavi"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Action    = "sts:AssumeRole"
+      Principal = { Service = "ecs-tasks.amazonaws.com" }
+    }]
+  })
+}
+resource "aws_iam_role_policy_attachment" "task_ssm_read" {
+  role       = aws_iam_role.task.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+}
+
 resource "aws_iam_role" "exec" {
-  name = "ecsTaskExecutionRole-vaishnavie"
+  name = "ecsTaskExecutionRole-vaishnavi"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -31,10 +48,13 @@ resource "aws_ecs_task_definition" "task" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = aws_iam_role.exec.arn
+  task_role_arn            = aws_iam_role.task.arn
 
   container_definitions = jsonencode([
     {
-      name  = "vaishnavi-strapii"
+      name      = "vaishnavi-strapii"
+      essential = true
+
       image = "${aws_ecr_repository.this.repository_url}:latest"
 
       portMappings = [
@@ -43,6 +63,15 @@ resource "aws_ecs_task_definition" "task" {
           hostPort      = 1337
         }
       ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/ecs/strapi"
+          awslogs-region = var.aws_region
+          awslogs-stream-prefix = "ecs"
+        }
+      }
 
       environment = [
         { name = "NODE_ENV", value = "production" },
@@ -67,6 +96,11 @@ resource "aws_ecs_task_definition" "task" {
     }
   ])
 
+  depends_on = [
+    aws_ecr_repository.this,
+    aws_cloudwatch_log_group.ecs
+  ]
+
 }
 
 resource "aws_ecs_service" "service" {
@@ -77,8 +111,13 @@ resource "aws_ecs_service" "service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = data.aws_subnets.default.ids
+    subnets          = data.aws_subnets.public.ids
     security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
   }
+}
+
+resource "aws_cloudwatch_log_group" "ecs" {
+  name              = "/ecs/strapi"
+  retention_in_days = 7
 }
