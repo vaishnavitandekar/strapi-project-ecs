@@ -96,11 +96,6 @@ resource "aws_ecs_task_definition" "task" {
     }
   ])
 
-  depends_on = [
-    aws_ecr_repository.this,
-    aws_cloudwatch_log_group.ecs
-  ]
-
 }
 
 resource "aws_ecs_service" "service" {
@@ -115,9 +110,4 @@ resource "aws_ecs_service" "service" {
     security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
   }
-}
-
-resource "aws_cloudwatch_log_group" "ecs" {
-  name              = "/ecs/strapi"
-  retention_in_days = 7
 }

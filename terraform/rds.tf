@@ -1,6 +1,6 @@
 resource "aws_db_subnet_group" "default" {
   name       = "vaishnavi-strapi-db-subnet"
-  subnet_ids = data.aws_subnets.private.ids
+  subnet_ids = data.aws_subnets.all.ids
 }
 
 resource "aws_db_instance" "postgres" {
