@@ -68,7 +68,7 @@ resource "aws_ecs_task_definition" "task" {
         logDriver = "awslogs"
         options = {
           awslogs-group         = "/ecs/strapi"
-          awslogs-region = var.aws_region
+          awslogs-region        = var.aws_region
           awslogs-stream-prefix = "ecs"
         }
       }
@@ -84,6 +84,9 @@ resource "aws_ecs_task_definition" "task" {
         { name = "DATABASE_NAME", value = "strapi" },
         { name = "DATABASE_USERNAME", value = "strapi" },
         { name = "DATABASE_PASSWORD", value = var.db_password },
+
+        { name = "DATABASE_SSL", value = "true" },
+        { name = "DATABASE_SSL_REJECT_UNAUTHORIZED", value = "false" },
 
         { name = "APP_KEYS", value = var.app_keys },
         { name = "API_TOKEN_SALT", value = var.api_token_salt },
